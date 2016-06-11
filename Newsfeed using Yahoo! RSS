@@ -1,0 +1,28 @@
+import feedparser
+
+
+news_areas = {'Stock market' : 'category-stocks', 'Top stories' : 'topic-top-stories', 'International' : 'category-international',
+              'Economic news' : 'category-economic-news', 'Bond market' : 'category-bonds', 'Currency news' : 'category-currencies',
+              'Commodities market' : 'category-commodities'}
+
+
+
+
+news_choice = input('Which area of news would you like to view? ')
+print()
+
+
+
+rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_choice + '/?format=rss')
+
+print(rss_url['feed']['title'])
+print()
+
+count = 0
+for posts in range(5):
+    print(rss_url['entries'][count]['title'])
+    print(rss_url['entries'][count]['link'])
+    print(rss_url['entries'][count]['description'][3:-4])
+    print(rss_url['entries'][count]['published'][:-9])
+    count = count+1
+    print()
