@@ -1,0 +1,24 @@
+import feedparser
+
+news_areas = {'Stock market', 'Top stories', 'International', 'Economic news', 'Bond market', 'Currency news', 'Commodities market'}
+
+news_area_url = {'category-stocks', 'topic-top-stories', 'category-international', 'category-economic-news', 'category-bonds', 'category-currencies', 'category-commodities'}
+
+def parse_feed():
+    print(rss_url['feed']['title'])
+    print('-----------------------------------')
+    print()
+    count = 0
+    for posts in range(5):
+        print(rss_url['entries'][count]['title'])
+        print(rss_url['entries'][count]['link'])
+        print(rss_url['entries'][count]['description'][3:-4])
+        print(rss_url['entries'][count]['published'][:-9])
+        count = count+1
+        print()
+
+news_feed = str(input('Which feed of news would you like to view? '))
+print()
+
+rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_feed + '/?format=rss')
+parse_feed()
