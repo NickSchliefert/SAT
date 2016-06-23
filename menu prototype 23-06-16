@@ -1,0 +1,22 @@
+from tkinter import *
+
+window = Tk()
+window.geometry('150x140')
+window.title('GUI Prototype')
+
+menu_heading = Label(window, text = 'MENU', font = 'bold')
+menu_heading.grid(row = 0, column = 0, columnspan = 2, pady = 2)
+
+graph_historical_button = Button(window, text = 'Graph historical stock data', width = 20)
+graph_historical_button.grid(row = 1, columnspan=2, pady = 1)
+
+graph_live_button = Button(window, text = 'Graph live stock data', width = 20)
+graph_live_button.grid(row = 2, columnspan=2, pady = 1)
+
+news_feed_button = Button(window, text = 'News feed', width = 20)
+news_feed_button.grid(row = 3, columnspan=2, pady = 1)
+
+learn_button = Button(window, text = 'Learn about finances', width = 20)
+learn_button.grid(row = 4, columnspan = 2, pady = 1)
+
+window.mainloop()
