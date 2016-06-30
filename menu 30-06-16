@@ -1,0 +1,67 @@
+from tkinter import *
+
+window = Tk()
+window.geometry('259x408')
+window.title('GUI Prototype')
+
+menu_heading = Label(window, text = 'MENU', font = 'bold')
+menu_heading.grid(row = 0, column = 0, columnspan = 2, pady = 2)
+
+
+
+historical_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finances.png')
+historical_graph_photo2 = historical_graph_photo1.subsample(11, 11)
+
+def historical_graph(event):
+    root = Toplevel(window)
+    Label(root, text = 'historical graph').grid()
+
+historical_graph_button = Button(window, image = historical_graph_photo2, compound = LEFT, text = 'Graph historical stock data', width = 180)
+historical_graph_button.grid(row = 1, columnspan=2, pady = 1)
+historical_graph_button.bind('<Button-1>', historical_graph)
+
+
+
+live_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\live graph.png')
+live_graph_photo2 = live_graph_photo1.subsample(20, 20)
+
+def live_graph(event):
+    root = Toplevel(window)
+    Label(root, text = 'live graph').grid()
+
+live_graph_button = Button(window, image = live_graph_photo2, compound = LEFT, text = 'Graph live stock data', width = 180)
+live_graph_button.grid(row = 2, columnspan=2, pady = 1)
+live_graph_button.bind('<Button-1>', live_graph)
+
+
+
+news_feed_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\news feed.gif')
+news_feed_photo2 = news_feed_photo1.subsample(8, 8)
+
+def news_feed(event):
+    root = Toplevel(window)
+    Label(root, text = 'news feed').grid()
+
+news_feed_button = Button(window, image = news_feed_photo2, compound = LEFT, text = 'News feed', width = 180)
+news_feed_button.grid(row = 3, columnspan=2, pady = 1)
+news_feed_button.bind('<Button-1>', news_feed)
+
+
+
+learn_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\learn.gif')
+learn_photo2 = learn_photo1.subsample(7, 7)
+
+def learn(event):
+    root = Toplevel(window)
+    Label(root, text = 'learn').grid()
+
+learn_button = Button(window, image=learn_photo2, compound=LEFT, text = 'Learn about finances', width = 180)
+learn_button.grid(row = 4, columnspan = 2, pady = 1)
+learn_button.bind('<Button-1>', learn)
+
+
+
+photo_label = Label(window, image = historical_graph_photo1)
+photo_label.grid(row = 5, columnspan = 2, pady = 3)
+
+window.mainloop()
