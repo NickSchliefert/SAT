@@ -1,0 +1,41 @@
+import feedparser
+
+news_areas = {'Stock market' : 'category-stocks', 'Top stories' : 'topic-top-stories', 'International' : 'category-international',
+              'Economic news' : 'category-economic-news', 'Bond market' : 'category-bonds', 'Currency news' : 'category-currencies',
+              'Commodities market' : 'category-commodities'}
+
+def parse_feed():
+    print(rss_url['feed']['title'])
+    print('-----------------------------------')
+    print()
+    count = 0
+    for posts in range(5):
+        print(rss_url['entries'][count]['title'])
+        print(rss_url['entries'][count]['link'])
+        print(rss_url['entries'][count]['description'][3:-4])
+        print(rss_url['entries'][count]['published'][:-9])
+        count = count+1
+        print()
+
+print('''
+-----Which news would you like to view?-----
+-----         1. Industry news.        -----
+-----         2. Company news.         -----
+--------------------------------------------''')
+print()
+
+news_choice = int(input('Which area of news would you like to view (1 or 2)? '))
+while news_choice not in (1, 2):
+    news_choice = int(input('Which area of news would you like to view (1 or 2)? '))
+
+if news_choice == 1:
+    news_feed = str(input('Which feed of news would you like to view? '))
+    print()
+    news_choice_url = news_areas[news_feed]
+    rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_choice_url + '/?format=rss')
+    parse_feed()
+elif news_choice == 2:
+    news_comp = input("Which company's news would you like to view (Enter their stock ticker, e.g twtr for Twitter)? ")
+    print()
+    rss_url = feedparser.parse('http://finance.yahoo.com/rss/headline?s=' + news_comp)
+    parse_feed()
