@@ -1,0 +1,143 @@
+from tkinter import *
+
+'''
+Initliase the main GUI window where everything is stored,
+define the dimensions of the window,
+and set the title of the window.
+'''
+window = Tk()
+window.geometry('259x408')
+window.title('GUI Prototype')
+
+# Create a text heading and define its placement within the grid
+menu_heading = Label(window, text = 'MENU', font = 'bold')
+menu_heading.grid(row = 0, column = 0, columnspan = 2, pady = 2)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+historical_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finances.png')
+historical_graph_photo2 = historical_graph_photo1.subsample(11, 11)
+
+def historical_graph(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+    Label(root, text = 'historical graph').grid()
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+historical_graph_button = Button(window, image = historical_graph_photo2, compound = LEFT, text = 'Graph historical stock data', width = 180)
+historical_graph_button.grid(row = 1, columnspan=2, pady = 1)
+historical_graph_button.bind('<Button-1>', historical_graph)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+live_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\live graph.png')
+live_graph_photo2 = live_graph_photo1.subsample(20, 20)
+
+# Define the function to create a new window within the main window, passing an event (left mouse click), and create a text heading
+def live_graph(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+    Label(root, text = 'live graph').grid()
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+live_graph_button = Button(window, image = live_graph_photo2, compound = LEFT, text = 'Graph live stock data', width = 180)
+live_graph_button.grid(row = 2, columnspan=2, pady = 1)
+live_graph_button.bind('<Button-1>', live_graph)
+
+
+def news_feed(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+
+    root = Toplevel(window)
+    # Create a text heading and define its placement within the grid
+    menu_heading = Label(root, text='News feed', font='bold')
+    menu_heading.grid(row=0, column=0, columnspan=3, pady=4)
+
+    # Create a variable of the selected radio button
+    button_choice = IntVar()
+
+    def selection():
+        ''' This function gets the activated radio button and calls its corresponding function.'''
+
+        # Get the value of the activated radio button, and call its corresponding function
+        choice = button_choice.get()
+        if choice == 0:
+            industry_news()
+        elif choice == 1:
+            company_news()
+
+    def industry_news():
+        ''' This function creates a new window within the main window, and displays industry news'''
+        new_root = Toplevel(root)
+        Label(new_root, text='Industry news').grid()
+
+    def company_news():
+        ''' This function creates a new window within the main window, and displays company news'''
+        new_root = Toplevel(root)
+        Label(new_root, text='Company news').grid()
+
+    # Create a radio button for the industry news option and define its placement within the grid
+    industry_button = Radiobutton(root, text='Industry news', variable=button_choice, value=0, indicatoron=0,
+                                  width=20)
+    industry_button.grid(row=1, column=0, columnspan=3)
+
+    # Create a radio button for the company news option and define its placement within the grid
+    company_button = Radiobutton(root, text='Company news', variable=button_choice, value=1, indicatoron=0, width=20)
+    company_button.grid(row=2, column=0, columnspan=3)
+
+    # Create a button that the user presses to finalise their choice and that calls the selection function
+    selection_button = Button(root, text="Select", command=selection, width=15).grid(row=3, column=0, columnspan=3, padx=5, pady=5)
+
+    # Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
+    finance_news_image1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finance news.gif')
+    finance_news_image2 = finance_news_image1.subsample(3, 3)
+
+    # Create a variable for the main image of the menu, and define its placement within the grid
+    main_photo = Label(root, image = finance_news_image2)
+    main_photo.grid(row = 4, columnspan = 3)
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+news_feed_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\news feed.gif')
+news_feed_photo2 = news_feed_photo1.subsample(8, 8)
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls the function to run the news feed option.
+'''
+news_feed_button = Button(window, image = news_feed_photo2, compound = LEFT, text = 'News feed', width = 180)
+news_feed_button.grid(row = 3, columnspan=2, pady = 1)
+news_feed_button.bind('<Button-1>', news_feed)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+learn_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\learn.gif')
+learn_photo2 = learn_photo1.subsample(7, 7)
+
+def learn(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+    Label(root, text = 'learn').grid()
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+learn_button = Button(window, image=learn_photo2, compound=LEFT, text = 'Learn about finances', width = 180)
+learn_button.grid(row = 4, columnspan = 2, pady = 1)
+learn_button.bind('<Button-1>', learn)
+
+# Create a variable for the main image of the menu, and define its placement within the grid
+main_photo = Label(window, image = historical_graph_photo1)
+main_photo.grid(row = 5, columnspan = 2, pady = 3)
+
+window.mainloop()
