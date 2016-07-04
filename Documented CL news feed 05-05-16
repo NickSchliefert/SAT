@@ -1,0 +1,59 @@
+import feedparser
+
+# Create a dictionary containing the industry news areas and their corresponding url segments
+news_areas = {'Stock market' : 'category-stocks', 'Top stories' : 'topic-top-stories', 'International' : 'category-international',
+              'Economic news' : 'category-economic-news', 'Bond market' : 'category-bonds', 'Currency news' : 'category-currencies',
+              'Commodities market' : 'category-commodities'}
+
+def parse_feed():
+    ''' This function parses the Yahoo! RSS API for data of the latest five articles'''
+
+# Display the title of the news feed
+    print(rss_url['feed']['title'])
+    print('-----------------------------------')
+    print()
+# Parse the Yahoo! RSS API, iterating over the latest five articles for the following data, then displaying it:
+    count = 0
+    for posts in range(5):
+# the article's title,
+        print(rss_url['entries'][count]['title'])
+# the article's link/url,
+        print(rss_url['entries'][count]['link'])
+# a short description/summary of the article
+        print(rss_url['entries'][count]['description'][3:-4])
+# the article's publishing date and time, less the last 9 characters (milliseconds, seconds, etc; unwanted data)
+        print(rss_url['entries'][count]['published'][:-9])
+        count = count+1
+        print()
+
+print('''
+-----Which news would you like to view?-----
+-----         1. Industry news.        -----
+-----         2. Company news.         -----
+--------------------------------------------''')
+print()
+
+# Ask the user for their choice from the menu, and deal with any unexpected inputs
+news_choice = int(input('Which option do you choose(1 or 2)? '))
+while news_choice not in (1, 2):
+    news_choice = int(input('Which area of news would you like to view (1 or 2)? '))
+
+# If the user's choice is industry news, ask them which feed they would like (E.g. Stock market),
+if news_choice == 1:
+# grab the corresponding url segment to the user's feed choice from the dictionary,
+    news_feed = str(input('Which feed of news would you like to view? '))
+    print()
+# grab the corresponding url segment to the user's feed choice from the dictionary,
+    news_choice_url = news_areas[news_feed]
+# set the url variable using by inserting this segment into the API url,
+    rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_choice_url + '/?format=rss')
+# and call the feed parsing function.
+    parse_feed()
+elif news_choice == 2:
+# If the user's choice is company news, ask them for the stock ticker of the company they wish to view (E.g. NFLX for Netflix),
+    news_comp = input("Which company's news would you like to view (Enter their stock ticker, e.g twtr for Twitter)? ")
+    print()
+# set the url variable by inserting the stock ticker into the API url,
+    rss_url = feedparser.parse('http://finance.yahoo.com/rss/headline?s=' + news_comp)
+# and call the feed parsing function.
+    parse_feed()
