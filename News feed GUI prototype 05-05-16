@@ -1,0 +1,58 @@
+from tkinter import *
+
+'''
+Initliase the main GUI window where everything is stored,
+define the dimensions of the window,
+and set the title of the window.
+'''
+window = Tk()
+window.geometry('203x250')
+window.title('GUI Prototype')
+
+# Create a text heading and define its placement within the grid
+menu_heading = Label(window, text = 'News feed', font = 'bold')
+menu_heading.grid(row = 0, column = 0, columnspan = 3, pady = 4)
+
+# Create a variable of the selected radio button
+button_choice = IntVar()
+
+def selection():
+    ''' This function gets the activated radio button and calls its corresponding function.'''
+
+# Get the value of the activated radio button, and call its corresponding function
+    choice = button_choice.get()
+    if choice == 0:
+        industry_news()
+    elif choice == 1:
+        company_news()
+
+def industry_news():
+    ''' This function creates a new window within the main window, and displays industry news'''
+    root = Toplevel(window)
+    Label(root, text = 'Industry news').grid()
+
+def company_news():
+    ''' This function creates a new window within the main window, and displays company news'''
+    root = Toplevel(window)
+    Label(root, text = 'Company news').grid()
+
+# Create a radio button for the industry news option and define its placement within the grid
+industry_button = Radiobutton(window, text = 'Industry news', variable = button_choice, value = 0, indicatoron = 0, width = 20)
+industry_button.grid(row = 1, column = 0, columnspan = 3)
+
+# Create a radio button for the company news option and define its placement within the grid
+company_button = Radiobutton(window, text = 'Company news', variable = button_choice, value = 1, indicatoron = 0, width = 20)
+company_button.grid(row = 2, column = 0, columnspan = 3)
+
+# Create a button that the user presses to finalise their choice and that calls the selection function
+selection_button = Button(window, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
+
+# Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
+finance_news_image1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finance news.gif')
+finance_news_image2 = finance_news_image1.subsample(3, 3)
+
+# Create a variable for the main image of the menu, and define its placement within the grid
+main_photo = Label(window, image = finance_news_image2)
+main_photo.grid(row = 4, columnspan = 3)
+
+window.mainloop()
