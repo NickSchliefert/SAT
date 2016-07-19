@@ -1,0 +1,138 @@
+from tkinter import *
+import feedparser
+
+'''
+Initliase the main GUI window where everything is stored,
+define the dimensions of the window,
+and set the title of the window.
+'''
+window = Tk()
+window.geometry('203x250')
+window.title('GUI Prototype')
+
+# Create a text heading and define its placement within the grid
+menu_heading = Label(window, text = 'News feed', font = 'bold')
+menu_heading.grid(row = 0, column = 0, columnspan = 3, pady = 4)
+
+# Create a variable of the selected radio button
+button_choice = IntVar()
+
+def selection():
+    ''' This function gets the activated radio button and calls its corresponding function.'''
+
+# Get the value of the activated radio button, and call its corresponding function
+    news_choice = button_choice.get()
+
+    # If the user's choice is industry news, ask them which feed they would like (E.g. Stock market),
+    if news_choice == 0:
+        # grab the corresponding url segment to the user's feed choice from the dictionary,
+        news_choice_url = news_areas[news_feed]
+        # set the url variable using by inserting this segment into the API url,
+        rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_choice_url + '/?format=rss')
+        # and call the feed parsing function.
+        parse_feed()
+# If the user's choice is the second button, call the company news function
+    elif news_choice == 1:
+        company_news()
+
+def read_news_file(news_feed_message):
+    with open('companyNews.txt', mode='r') as inFile:
+        news_data_read = inFile.read()
+
+    news_feed_message.configure(text=news_data_read)
+
+def parse_feed(news_feed_message, rss_url):
+    ''' This function parses the Yahoo! RSS API for data of the latest five articles, and writes it to companyNews.txt'''
+
+# Define the RSS feed to parse from, as the url passed in of the company the user chose
+    feed = feedparser.parse(rss_url)
+
+# Define the file to write the news data to, companyNews.txt
+    outFile = open('companyNews.txt', mode='w')
+
+# Create a list to store the news data parsed from the Yahoo! RSS
+    news_data_write = []
+# Initialise a count
+    count = 0
+# For the number of articles to append to the file, append the article's title, link, and published date to the news_elements list
+    for count in range(2):
+        news_data_write.append({feed['entries'][count].title,
+                      feed['entries'][count].link,
+                      feed['entries'][count].published})
+# Add one to the count, so that the next article is parsed
+        count+=1
+# For each item in the news_elements list, convert it to a string and write it to companyNews.txt
+        for item in news_data_write:
+            item = str(item)
+            outFile.write(item)
+# For each article, write a new line to companyNews.txt, so that each article's data is on its own line
+        outFile.write('\n')
+# Clear the news_elements list so that data is not written to the file more than once
+        del(news_data_write[:])
+    outFile.close()
+
+    read_news_file(news_feed_message)
+
+def industry_news():
+    ''' This function creates a new window within the main window, and displays industry news'''
+    root = Toplevel(window)
+    Label(root, text = 'Industry news').grid()
+
+def company_news():
+    ''' This function creates a new window within the main window, and displays company news'''
+
+    root = Toplevel(window)
+    Label(root, text = 'Company news').grid()
+
+    def company_news_handling(company_ticker):
+        ''' This function gets the input from the entry widget (stock ticker) to be graphed.'''
+
+    # set the url variable by inserting the stock ticker into the API url,
+        rss_url = ('http://finance.yahoo.com/rss/headline?s={0}'.format(company_ticker))
+    # and call the feed parsing function.
+        parse_feed(news_feed_message, rss_url)
+
+    # Create the entry widget where the user enters a stock ticker, and define its location within the grid
+    company_ticker_entry = Entry(root)
+    company_ticker_entry.grid(row = 1, column = 0, padx = 10)
+
+    def entry_handling():
+        '''This function validates the input of the entry box, and if there is nothing entered, an error is outputted until a value is'''
+
+        # Create a variable that equals the input from the entry widget
+        company_ticker = company_ticker_entry.get()
+
+        # Convert the input into a string
+        company_ticker = str(company_ticker)
+
+        if company_ticker == '':
+            print('Please enter a stock ticker in the entry box.')
+        else:
+            company_news_handling(company_ticker)
+
+    # Create the button that the user presses when they wish to graph the data of the stock ticker they inputted in the entry widget
+    graph_button = Button(root, text = 'SHOW', command = entry_handling, width = 10).grid(row = 2, column = 0)
+
+    news_feed_message = Message(root, text='', width=500, borderwidth=5, justify=LEFT, relief=RAISED)
+    news_feed_message.grid(row=3, column=0, columnspan=6)
+
+# Create a radio button for the industry news option and define its placement within the grid
+industry_button = Radiobutton(window, text = 'Industry news', variable = button_choice, value = 0, indicatoron = 0, width = 20)
+industry_button.grid(row = 1, column = 0, columnspan = 3)
+
+# Create a radio button for the company news option and define its placement within the grid
+company_button = Radiobutton(window, text = 'Company news', variable = button_choice, value = 1, indicatoron = 0, width = 20)
+company_button.grid(row = 2, column = 0, columnspan = 3)
+
+# Create a button that the user presses to finalise their choice and that calls the selection function
+selection_button = Button(window, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
+
+# Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
+finance_news_image1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finance news.gif')
+finance_news_image2 = finance_news_image1.subsample(3, 3)
+
+# Create a variable for the main image of the menu, and define its placement within the grid
+main_photo = Label(window, image = finance_news_image2)
+main_photo.grid(row = 4, columnspan = 3)
+
+window.mainloop()
