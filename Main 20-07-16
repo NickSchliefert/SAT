@@ -1,0 +1,402 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import urllib
+import feedparser
+import matplotlib.dates as mdates
+from matplotlib import style
+from tkinter import *
+
+
+'''
+Initliase the main GUI window where everything is stored,
+define the dimensions of the window,
+and set the title of the window.
+'''
+window = Tk()
+window.geometry('259x464')
+window.title('GUI Prototype')
+
+# Create a text heading and define its placement within the grid
+menu_heading = Label(window, text = 'MENU', font = 'bold', relief = RIDGE, width = 20, borderwidth = 5)
+menu_heading.grid(row = 0, column = 0, columnspan = 2, pady = 2)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+historical_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finances.png')
+historical_graph_photo2 = historical_graph_photo1.subsample(11, 11)
+
+def historical_graph(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+
+    root = Toplevel(window)
+    root.geometry('143x100')
+
+    def bytespdate2num(fmt, encoding = 'utf-8'):
+        ''' This function decodes the UNIX data format to a legible structure, and is needed due to the Matplotlib module.'''
+
+        # 'fmt' equals format, which is the format of the date stamp ('%Y%m%d'), encoding is 'utf-8', which is needed for the internet data.
+
+        # The string converter is equal to strip date to number, based on the format.
+        strconverter = mdates.strpdate2num(fmt)
+        def bytesconverter(bytes):
+            ''' This function converts the bytes of data, using the utf-8 encoding.'''
+
+            # Create the variable to equal the decoded bytes
+            string = bytes.decode(encoding)
+            # Return the decoded data string
+            return strconverter(string)
+        # Return the decoded data
+        return bytesconverter
+
+    def graph_data(stock_ticker):
+        ''' This function is to grab data for a specific inputted stock ticker from the Yahoo! Finance API.'''
+
+        # State the plot figure so that it can be modified
+        fig = plt.figure()
+        # Create the first subplot, with a 1 by 1 grid and the starting point of the grid as 0 by 0
+        ax1 = plt.subplot2grid((1,1), (0,0))
+
+        # Define the variable of the stock data url, where the data is grabbed from.
+        stock_price_url = 'http://chartapi.finance.yahoo.com/instrument/1.0/'+stock_ticker+'/chartdata;type=quote;range=10y/csv'
+        # Define the variable that uses the urrlib module and opens the stock price url to read and utilise.
+        source_code = urllib.request.urlopen(stock_price_url).read().decode()
+        # Create a blank list to store the stock data pulled from the Yahoo! API.
+        stock_data = []
+        # Split the data pulled from the Yahoo! API (source_code) with a new line.
+        split_source = source_code.split('\n')
+
+        '''
+        Because the source code data we want has 6 items (date, close price, high price, low price, open price, and volume of stock),
+        that are split by commas, we need to filter out all other lines without these characteristics.
+        This filters every line out that does not contain stock data, so that only stock data is appended to the list.
+        '''
+        for line in split_source:
+            # So, for each line in the source code, split with a comma,
+            split_line = line.split(',')
+            # and if the length of the line is 6 items,
+            if len(split_line) == 6:
+                # and if the values and labels are not in the line, append the data to the stock_data list
+                if 'values' not in line and 'labels' not in line:
+                    stock_data.append(line)
+
+        '''
+        Load the 6 items of data from the stock_data list using numpy. State the delimiter, and to unpack the data.
+        Using the converter function created above (bytespdate2num), convert the date (index 0 equals the date) from the yyyy:mm:dd structure, to a legible structure.
+        '''
+        date, closep, highp, lowp, openp, volume = np.loadtxt(stock_data, delimiter = ',', unpack = True, converters = {0: bytespdate2num('%Y%m%d')})
+        '''
+        Date structure and format:
+        # %Y = full year 2015
+        # %y = partial year 15
+        # %m = number month
+        # %H = hours
+        # %M = minutes
+        # %S = seconds
+        # 12-06-2014 = %m-%d-%Y
+        '''
+
+        # For the x axis 1 subplot, plot the date and the close price of the stock. '-' plots the data as a line, and label is the legend label
+        ax1.plot_date(date, closep, '-', label = 'Price')
+        # For the dates on the x axis, get the tick labels (each date label, e.g jan 2012, feb 2012, etc.)
+        for label in ax1.xaxis.get_ticklabels():
+        # Rotate each label by 45 degrees
+            label.set_rotation(45)
+        # Set a grid for the x axis 1 subplot.
+        ax1.grid(True)
+        # Set the color of both axis labels
+        ax1.xaxis.label.set_color('teal')
+        ax1.yaxis.label.set_color('teal')
+
+        # Set the color of the labels for profit and loss
+        ax1.plot([], [], linewidth = 5, label = 'Loss', color = 'crimson', alpha = 0.5)
+        ax1.plot([], [], linewidth = 5, label = 'Profit', color = 'limegreen', alpha = 0.5)
+
+        '''
+        Set the graph to fill the space between the date and the close price with either green or red, indicating profit or loss above/below the initial stock price.
+        Can also fill between date and price bought the stock at (Profit and Loss). Change '0' to variable 'bought_price', and the graph will fill based on that number,
+        e.g. ax1.fill_between(date, closep, 0, alpha = 0.3).
+        '''
+        ax1.fill_between(date, closep, closep[0], where = (closep > closep[0]), facecolor = 'limegreen', alpha=0.5)
+        ax1.fill_between(date, closep, closep[0], where=(closep < closep[0]), facecolor='crimson', alpha=0.5)
+
+        # Set the x and y axis labels, the title of the graph, and add a plot legend
+        plt.xlabel('Date')
+        plt.ylabel('Price ($)')
+        plt.title('{0} price over time' .format(stock_ticker))
+        plt.legend()
+        # Set the subplot parameters, so that labels aren't going off the plot, etc. 'wspace' equals width space, and 'hspace' equals height space (padding between figures when multiple are used)
+        plt.subplots_adjust(left = 0.16, bottom = 0.20, right = 0.94, top = 0.90, wspace = 0.2, hspace = 0)
+
+        plt.show()
+
+    # Create a text heading and define its placement within the grid
+    menu_heading = Label(root, text = 'Historical graph', font = 'bold')
+    menu_heading.grid(row = 0, column = 0, columnspan = 3, pady = 8)
+
+    def historical_graph_handling():
+        ''' This function gets the input from the entry widget (stock ticker) to be graphed.'''
+
+        # Create a variable that equals the input from the entry widget
+        stock_ticker = stock_ticker_entry.get()
+        # Convert the input into a string
+        stock_ticker = str(stock_ticker)
+        # Convert the string into uppercase
+        stock_ticker = stock_ticker.upper()
+        # Call the function to graph the price data of the stock ticker inputted
+        graph_data(stock_ticker)
+
+    # Create the entry widget where the user enters a stock ticker, and define its location within the grid
+    stock_ticker_entry = Entry(root)
+    stock_ticker_entry.grid(row = 1, column = 0, padx = 10)
+
+    # Create the button that the user presses when they wish to graph the data of the stock ticker they inputted in the entry widget
+    graph_button = Button(root, text = 'GRAPH', command = historical_graph_handling, width = 10).grid(row = 2, column = 0)
+
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+historical_graph_button = Button(window, image = historical_graph_photo2, compound = LEFT, text = 'Graph historical stock data', width = 180)
+historical_graph_button.grid(row = 1, columnspan=2, pady = 1)
+historical_graph_button.bind('<Button-1>', historical_graph)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+live_graph_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\live graph.png')
+live_graph_photo2 = live_graph_photo1.subsample(20, 20)
+
+def live_graph(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+    Label(root, text = 'live graph').grid()
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+live_graph_button = Button(window, image = live_graph_photo2, compound = LEFT, text = 'Graph live stock data', width = 180)
+live_graph_button.grid(row = 2, columnspan=2, pady = 1)
+live_graph_button.bind('<Button-1>', live_graph)
+
+
+def news_feed(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+
+    root = Toplevel(window)
+
+    # Create a text heading and define its placement within the grid
+    menu_heading = Label(root, text = 'News feed', font = 'bold')
+    menu_heading.grid(row = 0, column = 0, columnspan = 3, pady = 4)
+
+    # Create a variable of the selected radio button
+    button_choice = IntVar()
+
+    def selection():
+        ''' This function gets the activated radio button and calls its corresponding function.'''
+
+        # Get the value of the activated radio button, and call its corresponding function
+        news_choice = button_choice.get()
+
+        # If the user's choice is industry news, ask them which feed they would like (E.g. Stock market),
+        if news_choice == 0:
+            # grab the corresponding url segment to the user's feed choice from the dictionary,
+            news_choice_url = news_areas[news_feed]
+            # set the url variable using by inserting this segment into the API url,
+            rss_url = feedparser.parse('https://au.finance.yahoo.com/news/' + news_choice_url + '/?format=rss')
+            # and call the feed parsing function.
+            parse_feed()
+        # If the user's choice is the second button, call the company news function
+        elif news_choice == 1:
+            company_news()
+
+    def read_news_file(news_feed_message):
+        '''This function opens the companyNews text file and reads its contents, line by line'''
+        with open('companyNews.txt', mode='r') as inFile:
+            news_data_read = inFile.read()
+
+        news_feed_message.configure(text=news_data_read)
+
+    def parse_feed(news_feed_message, rss_url):
+        ''' This function parses the Yahoo! RSS API for data of the latest five articles, and writes it to companyNews.txt'''
+
+        # Define the RSS feed to parse from, as the url passed in of the company the user chose
+        feed = feedparser.parse(rss_url)
+
+        # Define the file to write the news data to, companyNews.txt
+        outFile = open('companyNews.txt', mode='w')
+
+        # Create a list to store the news data parsed from the Yahoo! RSS
+        news_data_write = []
+        # Initialise a count
+        count = 0
+        # For the number of articles to append to the file, append the article's title, link, and published date to the news_elements list
+        for count in range(2):
+            news_data_write.append({feed['entries'][count].title,
+                          feed['entries'][count].link,
+                          feed['entries'][count].published})
+            # Add one to the count, so that the next article is parsed
+            count+=1
+            # For each item in the news_elements list, convert it to a string and write it to companyNews.txt
+            for item in news_data_write:
+                item = str(item)
+                outFile.write(item)
+            # For each article, write a new line to companyNews.txt, so that each article's data is on its own line
+            outFile.write('\n')
+            # Clear the news_elements list so that data is not written to the file more than once
+            del(news_data_write[:])
+        outFile.close()
+
+        read_news_file(news_feed_message)
+
+    def industry_news():
+        ''' This function creates a new window within the main window, and displays industry news'''
+
+        industry_window = Toplevel(root)
+        Label(industry_window, text = 'Industry news').grid()
+
+    def company_news():
+        ''' This function creates a new window within the main window, and displays company news'''
+
+        company_window = Toplevel(root)
+        Label(company_window, text = 'Company news').grid()
+
+        def company_news_handling(company_ticker):
+            ''' This function gets the input from the entry widget (stock ticker) to be graphed.'''
+
+            # set the url variable by inserting the stock ticker into the API url,
+            rss_url = ('http://finance.yahoo.com/rss/headline?s={0}'.format(company_ticker))
+            # and call the feed parsing function.
+            parse_feed(news_feed_message, rss_url)
+
+        # Create the entry widget where the user enters a stock ticker, and define its location within the grid
+        company_ticker_entry = Entry(company_window)
+        company_ticker_entry.grid(row = 1, column = 0, padx = 10)
+
+        def entry_handling():
+            '''This function validates the input of the entry box, and if there is nothing entered, an error is outputted until a value is'''
+
+            # Create a variable that equals the input from the entry widget
+            company_ticker = company_ticker_entry.get()
+
+            # Convert the input into a string
+            company_ticker = str(company_ticker)
+
+            if company_ticker == '':
+                print('Please enter a stock ticker in the entry box.')
+            else:
+                company_news_handling(company_ticker)
+
+        # Create the button that the user presses when they wish to graph the data of the stock ticker they inputted in the entry widget
+        graph_button = Button(company_window, text = 'SHOW', command = entry_handling, width = 10).grid(row = 2, column = 0)
+
+        news_feed_message = Message(company_window, text='', width=500, borderwidth=5, justify=LEFT, relief=RAISED)
+        news_feed_message.grid(row=3, column=0, columnspan=6)
+
+    # Create a radio button for the industry news option and define its placement within the grid
+    industry_button = Radiobutton(root, text = 'Industry news', variable = button_choice, value = 0, indicatoron = 0, width = 20)
+    industry_button.grid(row = 1, column = 0, columnspan = 3)
+
+    # Create a radio button for the company news option and define its placement within the grid
+    company_button = Radiobutton(root, text = 'Company news', variable = button_choice, value = 1, indicatoron = 0, width = 20)
+    company_button.grid(row = 2, column = 0, columnspan = 3)
+
+    # Create a button that the user presses to finalise their choice and that calls the selection function
+    selection_button = Button(root, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
+
+    # Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
+    finance_news_image1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finance news.gif')
+    finance_news_image2 = finance_news_image1.subsample(3, 3)
+
+    # Create a variable for the main image of the menu, and define its placement within the grid
+    main_photo = Label(root, image = finance_news_image2)
+    main_photo.grid(row = 4, columnspan = 3)
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+news_feed_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\news feed.gif')
+news_feed_photo2 = news_feed_photo1.subsample(8, 8)
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls the function to run the news feed option.
+'''
+news_feed_button = Button(window, image = news_feed_photo2, compound = LEFT, text = 'News feed', width = 180)
+news_feed_button.grid(row = 3, columnspan=2, pady = 1)
+news_feed_button.bind('<Button-1>', news_feed)
+
+
+# Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
+learn_photo1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\learn.gif')
+learn_photo2 = learn_photo1.subsample(7, 7)
+
+def learn(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+
+    menu_choice = StringVar(root)
+    menu_choice.set("Select") # initial value
+
+    selection_message = Message(root, text = "Choose which area of finances you'd like to learn about below!", width = 180)
+    selection_message.grid(row = 0, column = 0, columnspan = 6)
+
+    menu_options = OptionMenu(root, menu_choice, "Stocks", "Bonds", "Index Funds", "Exchange Traded Funds (ETF's)")
+    menu_options.grid(row = 1, column = 2)
+
+    def selection():
+        '''This function gets the user's choice from the dropdown menu,
+        reads from the corresponding text file, and outputs its contents
+        to the message box below once the users presses the 'OK' button.
+        '''
+
+        learn_area = menu_choice.get()
+        learn_file = open('C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Text Files\\{0}.txt'.format(learn_area))
+        learn_text = learn_file.read()
+        learn_file.close()
+        about_message.configure(text = learn_text)
+
+    about_message = Message(root, text = '', width = 300, borderwidth = 5, justify = LEFT, relief = RAISED)
+    about_message.grid(row = 3, column = 0, columnspan = 6)
+
+    selection_button = Button(root, text="OK", command=selection)
+    selection_button.grid(row = 2, column = 2)
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+learn_button = Button(window, image=learn_photo2, compound=LEFT, text = 'Learn about finances', width = 180)
+learn_button.grid(row = 4, columnspan = 2, pady = 1)
+learn_button.bind('<Button-1>', learn)
+
+def about(event):
+    ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
+    root = Toplevel(window)
+
+    about_heading = Label(root, width = 25, text = 'ABOUT THIS PROGRAM', relief = RIDGE)
+    about_heading.grid(row = 0, column = 1, columnspan = 3)
+
+    about_file = open('C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Text Files\\About.txt')
+    about_text = about_file.read()
+    about_file.close()
+
+    about_message = Message(root, text = about_text, width = 300, borderwidth = 5, justify = LEFT, relief = RAISED)
+    about_message.grid(row = 1, column = 0, columnspan = 6)
+
+'''
+Create a button and set its parameters,
+define its placement within the grid,
+and bind the button to an event (left mouse click) that calls a function.
+'''
+about_button = Button(window, compound=LEFT, text = 'About', width = 26)
+about_button.grid(row = 5, columnspan = 2, pady = 1)
+about_button.bind('<Button-1>', about)
+
+# Create a variable for the main image of the menu, and define its placement within the grid
+main_photo = Label(window, image = historical_graph_photo1)
+main_photo.grid(row = 6, columnspan = 2, pady = 3)
+
+window.mainloop()
