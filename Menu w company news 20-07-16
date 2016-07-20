@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import urllib
-# Import the matplotlib dates converter
+import feedparser
 import matplotlib.dates as mdates
 from matplotlib import style
 from tkinter import *
+
 
 '''
 Initliase the main GUI window where everything is stored,
@@ -187,7 +188,7 @@ def news_feed(event):
     root = Toplevel(window)
 
     # Create a text heading and define its placement within the grid
-    menu_heading = Label(window, text = 'News feed', font = 'bold')
+    menu_heading = Label(root, text = 'News feed', font = 'bold')
     menu_heading.grid(row = 0, column = 0, columnspan = 3, pady = 4)
 
     # Create a variable of the selected radio button
@@ -253,14 +254,14 @@ def news_feed(event):
     def industry_news():
         ''' This function creates a new window within the main window, and displays industry news'''
 
-        root = Toplevel(window)
-        Label(root, text = 'Industry news').grid()
+        industry_window = Toplevel(root)
+        Label(industry_window, text = 'Industry news').grid()
 
     def company_news():
         ''' This function creates a new window within the main window, and displays company news'''
 
-        root = Toplevel(window)
-        Label(root, text = 'Company news').grid()
+        company_window = Toplevel(root)
+        Label(company_window, text = 'Company news').grid()
 
         def company_news_handling(company_ticker):
             ''' This function gets the input from the entry widget (stock ticker) to be graphed.'''
@@ -271,7 +272,7 @@ def news_feed(event):
             parse_feed(news_feed_message, rss_url)
 
         # Create the entry widget where the user enters a stock ticker, and define its location within the grid
-        company_ticker_entry = Entry(root)
+        company_ticker_entry = Entry(company_window)
         company_ticker_entry.grid(row = 1, column = 0, padx = 10)
 
         def entry_handling():
@@ -289,28 +290,28 @@ def news_feed(event):
                 company_news_handling(company_ticker)
 
         # Create the button that the user presses when they wish to graph the data of the stock ticker they inputted in the entry widget
-        graph_button = Button(root, text = 'SHOW', command = entry_handling, width = 10).grid(row = 2, column = 0)
+        graph_button = Button(company_window, text = 'SHOW', command = entry_handling, width = 10).grid(row = 2, column = 0)
 
-        news_feed_message = Message(root, text='', width=500, borderwidth=5, justify=LEFT, relief=RAISED)
+        news_feed_message = Message(company_window, text='', width=500, borderwidth=5, justify=LEFT, relief=RAISED)
         news_feed_message.grid(row=3, column=0, columnspan=6)
 
     # Create a radio button for the industry news option and define its placement within the grid
-    industry_button = Radiobutton(window, text = 'Industry news', variable = button_choice, value = 0, indicatoron = 0, width = 20)
+    industry_button = Radiobutton(root, text = 'Industry news', variable = button_choice, value = 0, indicatoron = 0, width = 20)
     industry_button.grid(row = 1, column = 0, columnspan = 3)
 
     # Create a radio button for the company news option and define its placement within the grid
-    company_button = Radiobutton(window, text = 'Company news', variable = button_choice, value = 1, indicatoron = 0, width = 20)
+    company_button = Radiobutton(root, text = 'Company news', variable = button_choice, value = 1, indicatoron = 0, width = 20)
     company_button.grid(row = 2, column = 0, columnspan = 3)
 
     # Create a button that the user presses to finalise their choice and that calls the selection function
-    selection_button = Button(window, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
+    selection_button = Button(root, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
 
     # Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
     finance_news_image1 = PhotoImage(file = 'C:\\Users\\nicks_000\\PycharmProjects\\untitled\\SAT\\GUI\\Images\\finance news.gif')
     finance_news_image2 = finance_news_image1.subsample(3, 3)
 
     # Create a variable for the main image of the menu, and define its placement within the grid
-    main_photo = Label(window, image = finance_news_image2)
+    main_photo = Label(root, image = finance_news_image2)
     main_photo.grid(row = 4, columnspan = 3)
 
 # Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
