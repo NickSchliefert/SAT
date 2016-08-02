@@ -24,7 +24,7 @@ menu_heading = Label(window, text = 'MENU', font = 'bold', relief = RIDGE, width
 menu_heading.grid(row = 0, column = 0, columnspan = 2, pady = 2)
 
 # Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
-historical_graph_photo1 = PhotoImage(file = 'E:\\Neutron Finance\\Main Program\\Images\\finances.png')
+historical_graph_photo1 = PhotoImage(file = 'Images\\finances.png')
 historical_graph_photo2 = historical_graph_photo1.subsample(11, 11)
 
 # Create a variable for the main image of the menu, and define its placement within the grid
@@ -34,8 +34,9 @@ main_photo.grid(row = 6, columnspan = 2, pady = 3)
 def historical_graph(event):
     ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
 
-    # Create a sub-window for the historical graph function. Change the title of the window, and set its colour.
+    # Create a sub-window for the historical graph function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
     root = Toplevel(window)
+    root.grab_set()
     root.title('Historical Graph')
     root.configure(background = '#B1F59A')
 
@@ -46,6 +47,7 @@ def historical_graph(event):
 
         # The string converter is equal to strip date to number, based on the format.
         strconverter = mdates.strpdate2num(fmt)
+
         def bytesconverter(bytes):
             ''' This function converts the bytes of data, using the utf-8 encoding.'''
 
@@ -213,14 +215,15 @@ historical_graph_button.bind('<Button-1>', historical_graph)
 
 
 # Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
-current_statistics_photo1 = PhotoImage(file = 'E:\\Neutron Finance\\Main Program\\Images\\live graph.png')
+current_statistics_photo1 = PhotoImage(file = 'Images\\live graph.png')
 current_statistics_photo2 = current_statistics_photo1.subsample(20, 20)
 
 def current_statistics(event):
     ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
 
-    # Create a sub-window for the current statistics function. Change the title of the window, and set its colour.
+    # Create a sub-window for the current statistics function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
     root = Toplevel(window)
+    root.grab_set()
     root.title('Current Statistics')
     root.configure(background = '#B1F59A')
     Label(root, text = 'Current statistics for a stock!').grid()
@@ -238,8 +241,9 @@ live_graph_button.bind('<Button-1>', current_statistics)
 def news_feed(event):
     ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
 
-    # Create a sub-window for the news feed function. Change the title of the window, and set its colour.
+    # Create a sub-window for the news feed function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
     root = Toplevel(window)
+    root.grab_set()
     root.title('News Feed')
     root.configure(background = '#B1F59A')
 
@@ -267,8 +271,9 @@ def news_feed(event):
     def industry_news():
         ''' This function creates a new window within the main window, and displays industry news'''
 
-        # Create a sub-window for the industry news function. Change the title of the window, and set its colour.
+        # Create a sub-window for the industry news function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
         industry_window = Toplevel(root)
+        industry_window.grab_set()
         industry_window.title('Industry News Feed')
         industry_window.configure(background = '#B1F59A')
 
@@ -340,7 +345,7 @@ def news_feed(event):
         '''This function reads the news file and outputs its contents to the message widget.'''
 
         # Open the file to read from
-        with open('E:\\Neutron Finance\\Main Program\\Text Files\\industryNews.txt', mode = 'r') as inFile:
+        with open('Text Files\\industryNews.txt', mode = 'r') as inFile:
             # Define a variable as the contents of the opened file
             news_data_read = inFile.read()
             # Print a new line
@@ -356,7 +361,7 @@ def news_feed(event):
         feed = feedparser.parse(rss_url)
 
         # Open the file to write to
-        with open('E:\\Neutron Finance\\Main Program\\Text Files\\industryNews.txt', mode = 'w') as outFile:
+        with open('Text Files\\industryNews.txt', mode = 'w') as outFile:
 
             # Create an empty list that the news data will be added to before it is written to the file
             news_data_write = []
@@ -385,7 +390,7 @@ def news_feed(event):
         '''This function opens the companyNews text file and reads its contents, line by line'''
 
         # Open the file to read from
-        with open('E:\\Neutron Finance\\Main Program\\Text Files\\companyNews.txt', mode='r') as inFile:
+        with open('Text Files\\companyNews.txt', mode='r') as inFile:
             # Define a variable as the contents of the opened file
             news_data_read = inFile.read()
             # Print a new line
@@ -401,7 +406,7 @@ def news_feed(event):
 
         try:
             # Define the file to write the news data to the company news text file
-            with open('E:\\Neutron Finance\\Main Program\\Text Files\\companyNews.txt', mode='w') as outFile:
+            with open('Text Files\\companyNews.txt', mode='w') as outFile:
 
                 # Create a list to store the news data parsed from the Yahoo! RSS
                 news_data_write = []
@@ -440,8 +445,9 @@ def news_feed(event):
     def company_news():
         ''' This function creates a new window within the main window, and displays company news'''
 
-        # Create a sub-window for the company news function. Change the title of the window, and set its colour.
+        # Create a sub-window for the company news function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
         company_window = Toplevel(root)
+        company_window.grab_set()
         company_window.configure(background = '#B1F59A')
         company_window.title('Company News Feed')
 
@@ -512,7 +518,7 @@ def news_feed(event):
     selection_button = Button(root, text="Select", command = selection, width = 15).grid(row = 3, column = 0, columnspan = 3, padx = 5, pady = 5)
 
     # Create a variable assigned to the location of the main image, and then change its proportions (the higher the number/s, the smaller)
-    finance_news_image1 = PhotoImage(file = 'E:\\Neutron Finance\\Main Program\\Images\\finance news.gif')
+    finance_news_image1 = PhotoImage(file = 'Images\\finance news.gif')
     finance_news_image2 = finance_news_image1.subsample(3, 3)
 
     # Create a variable for the main image of the menu, and define its placement within the grid
@@ -521,7 +527,7 @@ def news_feed(event):
     main_photo.grid(row = 4, column = 0)
 
 # Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
-news_feed_photo1 = PhotoImage(file = 'E:\\Neutron Finance\\Main Program\\Images\\news feed.gif')
+news_feed_photo1 = PhotoImage(file = 'Images\\news feed.gif')
 news_feed_photo2 = news_feed_photo1.subsample(8, 8)
 
 '''
@@ -535,14 +541,15 @@ news_feed_button.bind('<Button-1>', news_feed)
 
 
 # Create a variable assigned to the location of an image, and then change its proportions (the higher the number/s, the smaller)
-learn_photo1 = PhotoImage(file = 'E:\\Neutron Finance\\Main Program\\Images\\learn.gif')
+learn_photo1 = PhotoImage(file = 'Images\\learn.gif')
 learn_photo2 = learn_photo1.subsample(7, 7)
 
 def learn(event):
     ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
 
-    # Create a sub-window for the learn function. Change the title of the window, and set its colour.
+    # Create a sub-window for the learn function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
     root = Toplevel(window)
+    root.grab_set()
     root.configure(background = '#B1F59A')
     root.title('Learn About Investing')
 
@@ -578,7 +585,7 @@ def learn(event):
         # Define a variable and set it to the users selected dropdown option
         learn_area = menu_choice.get()
         # Define a variable and set it to the file that the user selected to learn about
-        learn_file = open('E:\\Neutron Finance\\Main Program\\Text Files\\Learn files\\{0}.txt'.format(learn_area))
+        learn_file = open('Text Files\\Learn files\\{0}.txt'.format(learn_area))
         # Define a variable to the contents of the user's selected file
         learn_text = learn_file.read()
         # Close the file so that it can be utilised and will not corrupt
@@ -606,8 +613,9 @@ learn_button.bind('<Button-1>', learn)
 def about(event):
     ''' This function creates a new window within the main window, passes an event(left mouse click), and creates a text heading'''
 
-    # Create a sub-window for the about function. Change the title of the window, and set its colour.
+    # Create a sub-window for the about function. Make it so that other windows cannot be clicked, change the title of the window, and set its colour.
     root = Toplevel(window)
+    root.grab_set()
     root.configure(background = '#B1F59A')
     root.title('About This Program')
 
@@ -616,7 +624,7 @@ def about(event):
     about_heading.grid(row = 0, column = 1, columnspan = 4, pady = 2.5)
 
     # Define a variable to the about file
-    about_file = open('E:\\Neutron Finance\\Main Program\\Text Files\\About.txt')
+    about_file = open('Text Files\\About.txt')
     # Define a variable and set it to the contents of the about file
     about_text = about_file.read()
     # Close the file so that it can be utilised and will not corrupt
